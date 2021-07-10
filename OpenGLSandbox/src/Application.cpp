@@ -120,6 +120,10 @@ int main(void)
     if (!glfwInit())
         return -1;
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
@@ -157,12 +161,16 @@ int main(void)
         2, 3, 0
     };
 
+    unsigned int vao;
+    GLCall(glGenVertexArrays(1, &vao)); // create vertex array object
+    GLCall(glBindVertexArray(vao)); // bind
+
     unsigned int buffer;
-    GLCall(glGenBuffers(1, &buffer));
-    GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-    GLCall(glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), verteces, GL_STATIC_DRAW));
+    GLCall(glGenBuffers(1, &buffer)); // create buffer (stores verteces)
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer)); // bind
+    GLCall(glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), verteces, GL_STATIC_DRAW)); // set data
     
-    GLCall(glEnableVertexAttribArray(0));
+    GLCall(glEnableVertexAttribArray(0)); // 
     GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
     
     unsigned int ibo;
@@ -177,6 +185,12 @@ int main(void)
 
     GLCall(int location = glGetUniformLocation(shader, "u_color"));
     ASSERT(location != -1); // check if being used
+    
+    // Reset all bindings
+    GLCall(glBindVertexArray(0));
+    GLCall(glUseProgram(0));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
     int frame = 0;
 
@@ -193,9 +207,14 @@ int main(void)
         //glVertex2f(0.5f, -0.5f);
         //glEnd();
 
-        // Set color
+        // Set shader and it's uniforms
+        GLCall(glUseProgram(shader));
         int t = frame % 50 > 25 ? 50 - frame % 50 : frame % 50;
         GLCall(glUniform4f(location, t / 25.f, 0.1f, 1.0f, 1.0f));
+
+        // Set vertex array (holds the buffer with the layout) and index buffer
+        GLCall(glBindVertexArray(vao));
+        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo))
 
         // Draw shape
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
