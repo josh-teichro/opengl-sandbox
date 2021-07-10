@@ -131,6 +131,9 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    // Turn on vsync
+    glfwSwapInterval(1);
+
     // Init GLEW
     if (glewInit() != GLEW_OK) {
         glfwTerminate();
@@ -169,8 +172,13 @@ int main(void)
 
     // Create shaders
     struct ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
-    unsigned int shader = CreateShader(source.vertexSource, source.fragmentSource);
-    GLCall(glUseProgram(shader));
+    unsigned int shader = CreateShader(source.vertexSource, source.fragmentSource); 
+    GLCall(glUseProgram(shader)); // must set uniforms after this
+
+    GLCall(int location = glGetUniformLocation(shader, "u_color"));
+    ASSERT(location != -1); // check if being used
+
+    int frame = 0;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -185,6 +193,11 @@ int main(void)
         //glVertex2f(0.5f, -0.5f);
         //glEnd();
 
+        // Set color
+        int t = frame % 50 > 25 ? 50 - frame % 50 : frame % 50;
+        GLCall(glUniform4f(location, t / 25.f, 0.1f, 1.0f, 1.0f));
+
+        // Draw shape
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
         /* Swap front and back buffers */
@@ -192,6 +205,8 @@ int main(void)
 
         /* Poll for and process events */
         GLCall(glfwPollEvents());
+
+        frame++;
     }
 
     GLCall(glDeleteProgram(shader));
