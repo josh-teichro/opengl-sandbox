@@ -1,5 +1,5 @@
 #include "IndexBuffer.h"
-#include "Renderer.h"
+#include "Core.h"
 
 /**
 * Create an IndexBuffer.
@@ -7,7 +7,8 @@
 * data: a pointer to the data that holds the indeces to render
 * count: number of indeces (indeces are assumed to be stored as unsigned ints
 */
-IndexBuffer::IndexBuffer(const unsigned int* data, unsigned int count)
+IndexBuffer::IndexBuffer(const unsigned int* data, unsigned int count) :
+    m_count(count)
 {
     ASSERT(sizeof(unsigned int) == sizeof(GLuint));
 

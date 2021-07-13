@@ -1,20 +1,30 @@
 #include "Renderer.h"
+#include "Core.h"
 
-#include <iostream>
-
-void GLClearError()
+/**
+* Create a Renderer.
+*/
+Renderer::Renderer()
 {
-    while (glGetError() != GL_NO_ERROR);
 }
 
-bool GLCheckError(const char* function, const char* file, int line)
+/**
+* Destroy this Renderer.
+*/
+Renderer::~Renderer()
 {
-    if (GLenum error = glGetError())
-    {
-        std::cout << "[OpenGL ERROR] (" << error << ") " <<
-            function << " " << file << ":" << line << std::endl;
-        return true;
-    }
+}
 
-    return false;
+void Renderer::Clear()
+{
+    GLCall(glClear(GL_COLOR_BUFFER_BIT));
+}
+
+void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const
+{
+    va.Bind();
+    ib.Bind();
+    shader.Bind();
+
+    GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr)); // hardcoded to uint for now (see IndexBuffer)
 }

@@ -1,4 +1,5 @@
 #include "VertexArray.h"
+#include "Core.h"
 
 /**
 * Create a VertexArray.

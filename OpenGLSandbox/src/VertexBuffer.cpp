@@ -1,5 +1,5 @@
 #include "VertexBuffer.h"
-#include "Renderer.h"
+#include "Core.h"
 
 /**
 * Create a VertexBuffer. This will also bind the buffer so that it can be used, as long as no other 

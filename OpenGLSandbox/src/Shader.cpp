@@ -1,5 +1,5 @@
 #include "Shader.h"
-#include "Renderer.h"
+#include "Core.h"
 
 #include <fstream>
 #include <sstream>
@@ -41,7 +41,7 @@ Shader::~Shader()
 /**
 * Use this Shader.
 */
-void Shader::Bind()
+void Shader::Bind() const
 {
     GLCall(glUseProgram(m_id));
 }
@@ -49,7 +49,7 @@ void Shader::Bind()
 /**
 * Stop using this Shader.
 */
-void Shader::Unbind()
+void Shader::Unbind() const
 {
     GLCall(glUseProgram(0));
 }

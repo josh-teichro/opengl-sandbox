@@ -80,25 +80,23 @@ int main(void)
         vb.Unbind();
         ib.Unbind();
 
+        Renderer renderer;
+
         int frame = 0;
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
             /* Render here */
-            GLCall(glClear(GL_COLOR_BUFFER_BIT));
+            renderer.Clear();
 
             // Set shader and it's uniforms
             int t = frame % 50 > 25 ? 50 - frame % 50 : frame % 50;
             shader.Bind();
             shader.SetUniform4f("u_color", t / 25.f, 0.1f, 1.0f, 1.0f);
 
-            // Bind buffers
-            va.Bind();
-            ib.Bind();
-
             // Draw shape
-            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+            renderer.Draw(va, ib, shader);
 
             /* Swap front and back buffers */
             GLCall(glfwSwapBuffers(window));
