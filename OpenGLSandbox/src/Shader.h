@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <string>
 
+#include "glm/glm.hpp"
+
 /**
 * Stores the source code for a shader after being parsed (see Shader::ParseShader). 
 */
@@ -30,6 +32,7 @@ public:
 	void SetUniform1i(const std::string& name, int v);
 	void SetUniform1f(const std::string& name, float v);
 	void SetUniform4f(const std::string& name, float v1, float v2, float v3, float v4);
+	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
 	int GetUniformLocation(const std::string& name);
 
 private:

@@ -79,6 +79,14 @@ void Shader::SetUniform4f(const std::string& name, float v1, float v2, float v3,
 }
 
 /**
+* Set/create a 4x4 matrix (float) to use in this Shader.
+*/
+void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
+{
+    GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
+}
+
+/**
 * Get the location id that OpenGL has asigned to the given uniform.
 */
 int Shader::GetUniformLocation(const std::string& name)

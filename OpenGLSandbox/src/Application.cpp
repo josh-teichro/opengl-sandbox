@@ -12,6 +12,9 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 int main(void)
 {
     GLFWwindow* window;
@@ -25,7 +28,7 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(640, 400, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -50,10 +53,10 @@ int main(void)
     {
         // Create a triangle
         float verteces[] = {
-            -0.5f, -0.5f, 0.0f, 0.0f,
-            0.5f, -0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, 1.0f, 1.0f,
-            -0.5f, 0.5f, 0.0f, 1.0f
+           -1.0f, -1.0f, 0.0f, 0.0f,
+            1.0f, -1.0f, 1.0f, 0.0f,
+            1.0f, 1.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, 0.0f, 1.0f
         };
 
         unsigned int indeces[] =
@@ -80,6 +83,16 @@ int main(void)
         Texture texture("res/textures/grass_block.png");
         texture.Bind();
         shader.SetUniform1i("u_texture", 0);
+
+        // Projection matrix
+        float aspect = 640.0f / 400.0f;
+        glm::mat4 proj = glm::ortho(-100.0f, 100.0f, -100.0f / aspect, 100.0f / aspect, -1.0f, 1.0f);
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-20.0f, 0.0f, 0.0f));
+        glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(25.0f, 25.0f, 1.0f));
+        model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        glm::mat4 MVP = proj * view * model;
+
+        shader.SetUniformMat4f("u_MVP", MVP);
 
         // Setup blending
         GLCall(glEnable(GL_BLEND));
