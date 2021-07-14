@@ -10,6 +10,7 @@
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "Texture.h"
 
 int main(void)
 {
@@ -49,10 +50,10 @@ int main(void)
     {
         // Create a triangle
         float verteces[] = {
-            -0.5f, -0.5f,
-            0.5f, -0.5f,
-            0.5f, 0.5f,
-            -0.5f, 0.5f
+            -0.5f, -0.5f, 0.0f, 0.0f,
+            0.5f, -0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, 1.0f, 1.0f,
+            -0.5f, 0.5f, 0.0f, 1.0f
         };
 
         unsigned int indeces[] =
@@ -61,10 +62,11 @@ int main(void)
             2, 3, 0
         };
 
-        VertexBuffer vb(verteces, 4 * 2 * sizeof(float));
+        VertexBuffer vb(verteces, 4 * 4 * sizeof(float));
 
         VertexArray va;
         VertexBufferLayout layout;
+        layout.Push<float>(2);
         layout.Push<float>(2);
         va.AddBuffer(vb, layout);
 
@@ -73,6 +75,15 @@ int main(void)
         // Create shaders
         Shader shader("res/shaders/Basic.shader");
         shader.SetUniform4f("u_color", 1, 1, 1, 1);
+
+        // Load textures
+        Texture texture("res/textures/grass_block.png");
+        texture.Bind();
+        shader.SetUniform1i("u_texture", 0);
+
+        // Setup blending
+        GLCall(glEnable(GL_BLEND));
+        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
         // Reset all bindings
         va.Unbind();

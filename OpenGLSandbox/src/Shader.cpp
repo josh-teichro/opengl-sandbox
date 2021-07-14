@@ -55,7 +55,23 @@ void Shader::Unbind() const
 }
 
 /**
-* Set/create a 4D vector to use in this Shader.
+* Set/create a 1D vector (integer) to use in this Shader.
+*/
+void Shader::SetUniform1i(const std::string& name, int v)
+{
+    GLCall(glUniform1i(GetUniformLocation(name), v));
+}
+
+/**
+* Set/create a 1D vector (float) to use in this Shader.
+*/
+void Shader::SetUniform1f(const std::string& name, float v)
+{
+    GLCall(glUniform1f(GetUniformLocation(name), v));
+}
+
+/**
+* Set/create a 4D vector (float) to use in this Shader.
 */
 void Shader::SetUniform4f(const std::string& name, float v1, float v2, float v3, float v4)
 {
