@@ -15,6 +15,10 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 int main(void)
 {
     GLFWwindow* window;
@@ -46,6 +50,17 @@ int main(void)
         glfwTerminate();
         return -1;
     }
+
+    // Setup imgui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init();
+
+    bool show_demo_window = true;
+    bool show_another_window = false;
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Print OpenGL version
     std::cout << glGetString(GL_VERSION) << std::endl;
@@ -84,15 +99,11 @@ int main(void)
         texture.Bind();
         shader.SetUniform1i("u_texture", 0);
 
-        // Projection matrix
-        float aspect = 640.0f / 400.0f;
-        glm::mat4 proj = glm::ortho(-100.0f, 100.0f, -100.0f / aspect, 100.0f / aspect, -1.0f, 1.0f);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-20.0f, 0.0f, 0.0f));
-        glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(25.0f, 25.0f, 1.0f));
-        model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        glm::mat4 MVP = proj * view * model;
-
-        shader.SetUniformMat4f("u_MVP", MVP);
+        // MVP matrix
+        glm::vec3 objPos = glm::vec3(1.0f);
+        glm::vec3 objRotation = glm::vec3(0.0f);
+        float objScale = 20.0f;
+        shader.SetUniformMat4f("u_MVP", glm::mat4(1.0f));
 
         // Setup blending
         GLCall(glEnable(GL_BLEND));
@@ -119,18 +130,63 @@ int main(void)
             shader.Bind();
             shader.SetUniform4f("u_color", t / 25.f, 0.1f, 1.0f, 1.0f);
 
+            // MVP matrix
+            float aspect = 640.0f / 400.0f;
+            glm::mat4 proj = glm::ortho(-100.0f, 100.0f, -100.0f / aspect, 100.0f / aspect, -1.0f, 1.0f);
+            glm::mat4 view = glm::mat4(1.0f);
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, objPos);
+            model = glm::scale(model, glm::vec3(objScale));
+            model = glm::rotate(model, glm::radians(objRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(objRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(objRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+            glm::mat4 MVP = proj * view * model;
+            shader.SetUniformMat4f("u_MVP", MVP);
+
             // Draw shape
             renderer.Draw(va, ib, shader);
+
+            // imgui frame (begin)
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
+            {
+                // imgui window
+                ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+                ImGui::SliderFloat3("Object Position", &objPos.x, -100.0f, 100.0f);
+                ImGui::SliderFloat3("Object Rotation", &objRotation.x, -180.0f, 180.0f);
+                ImGui::SliderFloat("Object Scale", &objScale, 0.0f, 100.0f);
+
+                if (ImGui::Button("Reset"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                {
+                    objPos = glm::vec3(1.0f);
+                    objRotation = glm::vec3(0.0f);
+                    objScale = 20.0f;
+                }
+
+                ImGui::End();
+            }
+
+            // imgui frame (end)
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+            frame++;
 
             /* Swap front and back buffers */
             GLCall(glfwSwapBuffers(window));
 
             /* Poll for and process events */
             GLCall(glfwPollEvents());
-
-            frame++;
         }
     }
+
+    // imgui cleanup
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     glfwTerminate();
     return 0;
