@@ -13,7 +13,7 @@
 #include "Texture.h"
 
 #include "tests/TestClearColor.h"
-#include "tests/TestSimpleTexture.h"
+#include "tests/TestTexture2D.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -66,15 +66,12 @@ int main(void)
     // Print OpenGL version
     std::cout << glGetString(GL_VERSION) << std::endl;
 
+    /* Render loop and variables */
     {
-        // Setup blending
-        GLCall(glEnable(GL_BLEND));
-        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
         Renderer renderer;
 
         //test::TestClearColor test;
-        test::TestSimpleTexture test("res/textures/grass_block.png", 25.0f);
+        test::TestTexture2D test("res/textures/grass_block.png", 25.0f);
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))

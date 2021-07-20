@@ -9,6 +9,7 @@
 #include "Shader.h"
 
 #include <string>
+#include <memory>
 
 namespace test {
 
@@ -16,25 +17,22 @@ namespace test {
 	* A test which demonstrates how to use the OpenGL abstractions in this project
 	* to render a texture in the window.
 	*/
-	class TestSimpleTexture : public Test
+	class TestTexture2D : public Test
 	{
 	public:
-		TestSimpleTexture(const std::string& texturePath, float size);
-		~TestSimpleTexture();
+		TestTexture2D(const std::string& texturePath, float size);
+		~TestTexture2D();
 
 		void OnUpdate(float deltaTime) override;
 		void OnRender(const Renderer& renderer) override;
 		void OnImGuiRender() override;
 
 	private:
-		float* m_verteces;
-		unsigned int* m_indeces;
-
-		Texture* m_texture;
-		VertexBuffer* m_vb;
-		VertexArray* m_va;
-		IndexBuffer* m_ib;
-		Shader* m_shader;
+		std::unique_ptr<Texture> m_texture;
+		std::unique_ptr<VertexBuffer> m_vb;
+		std::unique_ptr<VertexArray> m_va;
+		std::unique_ptr<IndexBuffer> m_ib;
+		std::unique_ptr<Shader> m_shader;
 
 		glm::vec2 m_texturePosition;
 		float m_textureRotation;

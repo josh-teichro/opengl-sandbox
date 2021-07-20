@@ -1,4 +1,4 @@
-#include "TestSimpleTexture.h"
+#include "TestTexture2D.h"
 
 #include "Core.h"
 
@@ -15,41 +15,41 @@ namespace test {
 	* texturePath: path to texture
 	* size: default size of texture
 	*/
-	TestSimpleTexture::TestSimpleTexture(const std::string& texturePath, float size = 25.0f) :
+	TestTexture2D::TestTexture2D(const std::string& texturePath, float size = 25.0f) :
 		m_texturePosition(0.0),
 		m_textureRotation(0.0),
 		m_textureScale(size),
 		m_originalScale(size)
 	{
 		// Create a rectangle
-		m_verteces = new float[16] {
+		float verteces[] = {
 		   -1.0f, -1.0f, 0.0f, 0.0f,
 			1.0f, -1.0f, 1.0f, 0.0f,
 			1.0f, 1.0f, 1.0f, 1.0f,
 			-1.0f, 1.0f, 0.0f, 1.0f
 		};
 
-		m_indeces = new unsigned int[6] {
+		unsigned int indeces[] = {
 			0, 1, 2,
 			2, 3, 0
 		};
 
-		m_vb = new VertexBuffer(m_verteces, 4 * 4 * sizeof(float));
+		m_vb = std::make_unique<VertexBuffer>(verteces, 4 * 4 * sizeof(float));
 
 		VertexBufferLayout layout;
 		layout.Push<float>(2);
 		layout.Push<float>(2);
-		m_va = new VertexArray();
+		m_va = std::make_unique<VertexArray>();
 		m_va->AddBuffer(*m_vb, layout);
 
-		m_ib = new IndexBuffer(m_indeces, 2 * 3);
+		m_ib = std::make_unique<IndexBuffer>(indeces, 2 * 3);
 
 		// Create shaders
-		m_shader = new Shader("res/shaders/Basic.shader");
+		m_shader = std::make_unique<Shader>("res/shaders/Basic.shader");
 		m_shader->SetUniform4f("u_color", 1, 1, 1, 1);
 
 		// Load textures
-		m_texture = new Texture(texturePath);
+		m_texture = std::make_unique<Texture>(texturePath);
 		m_texture->Bind();
 		m_shader->SetUniform1i("u_texture", 0);
 
@@ -60,15 +60,8 @@ namespace test {
 	/**
 	* Destroy this test.
 	*/
-	TestSimpleTexture::~TestSimpleTexture()
+	TestTexture2D::~TestTexture2D()
 	{
-		delete[] m_verteces;
-		delete[] m_indeces;
-		delete m_texture;
-		delete m_vb;
-		delete m_va;
-		delete m_ib;
-		delete m_shader;
 	}
 
 	/**
@@ -76,7 +69,7 @@ namespace test {
 	*
 	* deltaTime: time passed between frames (not yet implemented)
 	*/
-	void TestSimpleTexture::OnUpdate(float deltaTime)
+	void TestTexture2D::OnUpdate(float deltaTime)
 	{
 	}
 
@@ -85,7 +78,7 @@ namespace test {
 	*
 	* renderer: the current Renderer object
 	*/
-	void TestSimpleTexture::OnRender(const Renderer& renderer)
+	void TestTexture2D::OnRender(const Renderer& renderer)
 	{
 		// MVP matrix
 		float aspect = 640.0f / 400.0f;
@@ -109,7 +102,7 @@ namespace test {
 	*
 	* Draw ImGui components here (ImGui::begin and ImGui::end are called outside this function call).
 	*/
-	void TestSimpleTexture::OnImGuiRender()
+	void TestTexture2D::OnImGuiRender()
 	{
 		ImGui::SliderFloat2("Texture Position", &m_texturePosition.x, -100.0f, 100.0f);
 		ImGui::SliderFloat("Texture Rotation", &m_textureRotation, -180.0f, 180.0f);
