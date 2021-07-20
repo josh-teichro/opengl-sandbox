@@ -2,6 +2,11 @@
 
 #include "Core.h"
 
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexArray.h"
+#include "Shader.h"
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -15,11 +20,11 @@ namespace test {
 	* texturePath: path to texture
 	* size: default size of texture
 	*/
-	TestTexture2D::TestTexture2D(const std::string& texturePath, float size = 25.0f) :
+	TestTexture2D::TestTexture2D() :
 		m_texturePosition(0.0),
 		m_textureRotation(0.0),
-		m_textureScale(size),
-		m_originalScale(size)
+		m_textureScale(25.0f),
+		m_originalScale(25.0f)
 	{
 		// Create a rectangle
 		float verteces[] = {
@@ -44,12 +49,11 @@ namespace test {
 
 		m_ib = std::make_unique<IndexBuffer>(indeces, 2 * 3);
 
-		// Create shaders
+		// Create shader
 		m_shader = std::make_unique<Shader>("res/shaders/Basic.shader");
-		m_shader->SetUniform4f("u_color", 1, 1, 1, 1);
 
 		// Load textures
-		m_texture = std::make_unique<Texture>(texturePath);
+		m_texture = std::make_unique<Texture>("res/textures/grass_block.png");
 		m_texture->Bind();
 		m_shader->SetUniform1i("u_texture", 0);
 

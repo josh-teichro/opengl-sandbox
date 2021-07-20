@@ -1,12 +1,7 @@
 #pragma once
 
 #include "Test.h"
-
 #include "Texture.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexArray.h"
-#include "Shader.h"
 
 #include <string>
 #include <memory>
@@ -20,7 +15,7 @@ namespace test {
 	class TestTexture2D : public Test
 	{
 	public:
-		TestTexture2D(const std::string& texturePath, float size);
+		TestTexture2D();
 		~TestTexture2D();
 
 		void OnUpdate(float deltaTime) override;

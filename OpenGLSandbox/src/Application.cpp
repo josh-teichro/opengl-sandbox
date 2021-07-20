@@ -2,21 +2,12 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
-#include <fstream>
-#include <string>
 
 #include "Renderer.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexArray.h"
-#include "Shader.h"
-#include "Texture.h"
 
+#include "tests/TestMenu.h"
 #include "tests/TestClearColor.h"
 #include "tests/TestTexture2D.h"
-
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
@@ -70,8 +61,9 @@ int main(void)
     {
         Renderer renderer;
 
-        //test::TestClearColor test;
-        test::TestTexture2D test("res/textures/grass_block.png", 25.0f);
+        test::TestMenu testMenu;
+        testMenu.RegisterTest<test::TestClearColor>("Clear Color");
+        testMenu.RegisterTest<test::TestTexture2D>("2D Texture");
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
@@ -79,8 +71,8 @@ int main(void)
             /* Render here */
             renderer.Clear();
 
-            test.OnUpdate(0.0f);
-            test.OnRender(renderer);
+            testMenu.OnUpdate(0.0f);
+            testMenu.OnRender(renderer);
 
             // imgui frame (begin)
             ImGui_ImplOpenGL3_NewFrame();
@@ -89,7 +81,7 @@ int main(void)
 
             // imgui frame (render)
             ImGui::Begin("Debug");
-            test.OnImGuiRender();
+            testMenu.OnImGuiRender();
             ImGui::End();
 
             // imgui frame (end)
